@@ -1,0 +1,28 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyPackageRequirementsInspection" enabled="true" level="WARNING" enabled_by_default="true">
+      <option name="ignoredPackages">
+        <value>
+          <list size="15">
+            <item index="0" class="java.lang.String" itemvalue="django-anymail" />
+            <item index="1" class="java.lang.String" itemvalue="mod" />
+            <item index="2" class="java.lang.String" itemvalue="google-auth-oauthlib" />
+            <item index="3" class="java.lang.String" itemvalue="cffi" />
+            <item index="4" class="java.lang.String" itemvalue="pycparser" />
+            <item index="5" class="java.lang.String" itemvalue="whitenoise" />
+            <item index="6" class="java.lang.String" itemvalue="python3-openid" />
+            <item index="7" class="java.lang.String" itemvalue="django" />
+            <item index="8" class="java.lang.String" itemvalue="djangorestframework-simplejwt" />
+            <item index="9" class="java.lang.String" itemvalue="social-auth-app-django" />
+            <item index="10" class="java.lang.String" itemvalue="google-auth-httplib2" />
+            <item index="11" class="java.lang.String" itemvalue="pillow" />
+            <item index="12" class="java.lang.String" itemvalue="pytz" />
+            <item index="13" class="java.lang.String" itemvalue="djangorestframework" />
+            <item index="14" class="java.lang.String" itemvalue="django-cors-headers" />
+          </list>
+        </value>
+      </option>
+    </inspection_tool>
+  </profile>
+</component>
