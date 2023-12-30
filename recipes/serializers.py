@@ -8,6 +8,7 @@ class IngredientSerializer(serializers.ModelSerializer):
         model = Ingredient
         fields = '__all__'
 
+
 class ProfileSerilizer(serializers.ModelSerializer):
     # user = UserSerializer(many=False)
     class Meta:
@@ -15,14 +16,15 @@ class ProfileSerilizer(serializers.ModelSerializer):
         fields = '__all__'
     # recipe_created = RecipeSerializer(many=True, read_only=True)
 
+
 class RecipeSerializer(serializers.ModelSerializer):
     ingredients = IngredientSerializer(many=True)
     owner = ProfileSerilizer(read_only=True)  # Use the owner's profile as read-only field
 
-
     class Meta:
         model = Recipe
         fields = '__all__'
+        read_only_fields = ['featured_image']
 
     def create(self, validated_data):
         ingredients_data = validated_data.pop('ingredients', [])
@@ -46,12 +48,21 @@ class RecipeSerializer(serializers.ModelSerializer):
             recipe.ingredients.add(ingredient)
 
         return recipe
-    
+
 
 class FavouriteSerializer(serializers.ModelSerializer):
-    creator = ProfileSerilizer(many = False, read_only=True)
-    recipe = RecipeSerializer(many = False, read_only=True)
+    creator = ProfileSerilizer(many=False, read_only=True)
+    recipe = serializers.PrimaryKeyRelatedField(queryset=Recipe.objects.all())
+
     class Meta:
         model = Favourite
         fields = '__all__'
 
+
+class FavouriteListSerializer(serializers.ModelSerializer):
+    creator = ProfileSerilizer(many=False, read_only=True)
+    recipe = RecipeSerializer(many=False, read_only=True)
+
+    class Meta:
+        model = Favourite
+        fields = '__all__'

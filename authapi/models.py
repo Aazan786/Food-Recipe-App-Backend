@@ -4,7 +4,7 @@ from django.contrib.auth.models import AbstractUser, AbstractBaseUser, BaseUserM
 
 # Create your models here.
 class MyUserManager(BaseUserManager):
-    def create_user(self, email, password = None, password2 = None, **extra_fields):
+    def create_user(self, email, password=None, password2=None, **extra_fields):
         """
         Creates and saves a User with the given email, date of
         birth and password.
@@ -14,7 +14,7 @@ class MyUserManager(BaseUserManager):
 
         user = self.model(
             email=self.normalize_email(email),
-           **extra_fields,
+            **extra_fields,
         )
         user.tc = extra_fields['tc']
 
@@ -33,7 +33,6 @@ class MyUserManager(BaseUserManager):
 
         return self.create_user(email, password, **extra_fields)
 
-        
         # user = self.create_user(
         #     email,
         #     password=password,
@@ -43,7 +42,6 @@ class MyUserManager(BaseUserManager):
         # user.is_admin = True
         # user.save(using=self._db)
         # return user
-
 
 
 class User(AbstractBaseUser, PermissionsMixin):
@@ -58,7 +56,6 @@ class User(AbstractBaseUser, PermissionsMixin):
     is_admin = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now_add=True)
-
 
     objects = MyUserManager()
 
@@ -84,5 +81,12 @@ class User(AbstractBaseUser, PermissionsMixin):
         # Simplest possible answer: All admins are staff
         return self.is_admin
 
+
+class VerificationCode(models.Model):
+    user = models.OneToOneField(User, on_delete=models.CASCADE)
+    code = models.CharField(max_length=6)
+    timestamp = models.DateTimeField()
+    expiration_time = models.DateTimeField()
+    used = models.BooleanField(default=False)
 
 

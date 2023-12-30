@@ -3,10 +3,14 @@ from rest_framework.permissions import IsAuthenticated
 from rest_framework.response import Response
 from rest_framework import status
 from authapi.serializers import UserRegistationSerilizer, UserLoginSerilizer, UserChangePasswordSerializer, \
-    SendPasswordResetEmailSerializer, PasswordResetSerializer
+    SendVerificationCodeSerializer,  ResetPasswordSerializer
+from authapi.models import User, VerificationCode
 from django.contrib.auth import authenticate
 from authapi.renderers import UserRenderer
 from rest_framework_simplejwt.tokens import RefreshToken
+from rest_framework import serializers
+from authapi.utils import Util, generate_verification_code_with_timestamp, generate_verification_code, \
+    validate_verification_code
 
 
 # creating token manually
@@ -27,7 +31,7 @@ def UserRegistration(request):
         serializer = UserRegistationSerilizer(data=request.data)
         serializer.is_valid(raise_exception=True)
         user = serializer.save()
-        return Response({"Registration": "success"},
+        return Response({"Registration successful": "success"},
                         status=status.HTTP_201_CREATED)
 
 
@@ -61,15 +65,45 @@ def ChangePassword(request):
 
 @api_view(['POST'])
 @renderer_classes([UserRenderer])
-def SendPasswordResetEmail(request):
-    serializer = SendPasswordResetEmailSerializer(data=request.data)
+def send_verification_code(request, *args, **kwargs):
+    serializer = SendVerificationCodeSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    return Response({'msg': 'Password Reset link send. Please check your Email'}, status=status.HTTP_200_OK)
+    return Response({'msg': 'Verification code sent. Please check your email'}, status=status.HTTP_200_OK)
+
+
+# @api_view(['POST'])
+# @renderer_classes([UserRenderer])
+# def verify_verification_code(request, *args, **kwargs):
+#     serializer = VerifyVerificationCodeSerializer(data=request.data)
+#     serializer.is_valid(raise_exception=True)
+
+# Retrieve the user based on the email provided in the request data
+# email = serializer.validated_data['email']
+# try:
+#     user = User.objects.get(email=email)
+# except User.DoesNotExist:
+#     raise serializers.ValidationError('User not found')
+#
+# return Response({'msg': 'Verification code is valid'}, status=status.HTTP_200_OK)
 
 
 @api_view(['POST'])
 @renderer_classes([UserRenderer])
-def ResetPassword(request, uid, token):
-    serializer = PasswordResetSerializer(data=request.data, context={'uid': uid, 'token': token})
+def reset_password(request, *args, **kwargs):
+    serializer = ResetPasswordSerializer(data=request.data)
     serializer.is_valid(raise_exception=True)
-    return Response({'msg': 'Password Reset Successfully'}, status=status.HTTP_200_OK)
+
+    # Reset password logic
+    verification_code_obj = VerificationCode.objects.get(
+        # user__email=serializer.validated_data['email'],
+        code=serializer.validated_data['verification_code']
+    )
+
+    email = verification_code_obj.user
+    user = User.objects.get(email=email)
+    user.set_password(serializer.validated_data['password'])
+    user.save()
+    verification_code_obj.used = True
+    verification_code_obj.save()
+
+    return Response({'msg': 'Password reset successfully'}, status=status.HTTP_200_OK)

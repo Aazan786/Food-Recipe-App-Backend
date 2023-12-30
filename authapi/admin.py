@@ -1,6 +1,7 @@
 from django.contrib import admin
-from .models import User
+from .models import User, VerificationCode
 from django.contrib.auth.admin import UserAdmin
+
 
 # Register your models here.
 class MyUserModeladmin(UserAdmin):
@@ -18,7 +19,7 @@ class MyUserModeladmin(UserAdmin):
             None,
             {
                 "classes": ["wide"],
-                "fields": ["email", "name","tc", "password1", "password2"],
+                "fields": ["email", "name", "tc", "password1", "password2"],
             },
         ),
     ]
@@ -27,8 +28,6 @@ class MyUserModeladmin(UserAdmin):
     filter_horizontal = []
 
 
-
-
 admin.site.register(User, MyUserModeladmin)
-
+admin.site.register(VerificationCode)
 
